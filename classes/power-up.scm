@@ -7,8 +7,7 @@
     (init-field _length)
     (init-field _duration)
     
-    (define/public (get-length!)
-      _length)
+    (field (_player-who-picked-up-power-up #f))
     
     (define/public (draw dc)
       (send dc translate _x-coord _y-coord)
@@ -16,35 +15,57 @@
       (send dc translate (- 0 _x-coord) (- 0 _y-coord)))
     
     (define/public (hit-by-player?)
-      (for-each (lambda (player)
-                  (if (>= (+ (/ _length 2) (send player get-radius!)) (sqrt (+ (sqr (- _x-coord (send player get-x-coord!))) (sqr (- _y-coord (send player get-y-coord!))))))
-                      (begin
-                        (delete)
-                        (on-collision player))
-                      (void)))
-                  *list-of-players*))
+      (let ((player-hit #f))
+        (for-each (lambda (player)
+                    (if (>= (+ (/ _length 2) (send player get-radius!)) (sqrt (+ (sqr (- _x-coord (send player get-x-coord!))) (sqr (- _y-coord (send player get-y-coord!))))))
+                        (set! player-hit player) 
+                        (void)))
+                  *list-of-players*)
+        player-hit))
     
-    (define/public (reset-power-up player);Hör ihop med on-collsion, gör det motsatta.
-      (send player change-speed -1))
+    (define (on-collision player)
+      (delete)
+      (set! _player-who-picked-up-power-up player) 
+      (apply-power-up player)
+      (start-timer!))
     
-    (define/public (on-collision player) ;Denna overridas i subklasserna för att få olika typer av power-ups.
-     (begin (send player change-speed 1))) ;Vad power-upen ska göra, det här är ett typexmplar
-            ;(start-timer! player)))
+    (define (reset-power-up-for-timer)
+      (reset-power-up))
     
-    ;(define (start-timer! player) (new timer% ;Startar en timer som sätter igång reset-power-up när tiden duration har gått.
-     ;          (notify-callback (reset-power-up player))
-      ;         (interval _duration)
-       ;        (just-once? #t)))
-           
-      ;Det kommenterade ovan fuckade upp endel, får ordna senare            
-                        
+    (define/public (reset-power-up);Hör ihop med apply-power-up, gör det motsatta.
+      (void))
+    
+    (define/public (apply-power-up player) ;Denna overridas i subklasserna för att få olika typer av power-ups.
+      (void))
+    
+    (define (start-timer!) (new timer% ;Startar en timer som sätter igång reset-power-up när tiden duration har gått.
+                                (notify-callback reset-power-up-for-timer)
+                                (interval _duration)
+                                (just-once? #t)))  
+    
     (define/public (delete)
       (set! *list-of-power-ups* (remove this *list-of-power-ups* eq?)))
     
     (set! *list-of-power-ups* (append (list this) *list-of-power-ups*))
     
     (define/public (update)
-      (hit-by-player?))))
+      (unless (not (hit-by-player?))
+        (on-collision (hit-by-player?))))))
+
+
+;;Ökad hastighet på spelaren
+(define power-up-speed%
+  (class power-up%
+    (super-new)
+    (inherit-field _player-who-picked-up-power-up)
     
+    (define/override (reset-power-up)
+      (send _player-who-picked-up-power-up change-speed -1))
     
-      
+    (define/override (apply-power-up player)
+      (send player change-speed 1))))
+
+
+
+
+

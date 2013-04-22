@@ -29,7 +29,6 @@
     
     
     
-    
     ;;Datareturnerare
     
     ;-----------------------
@@ -88,7 +87,7 @@
     
     (define/public (get-x-coord!)
       _x-coord)
-      
+    
     (define/public (get-y-coord!)
       _y-coord)
     
@@ -99,21 +98,20 @@
     (define (reset-allowed-to-fire)
       (set! _allowed-to-fire #t))
     
-   
     
     (define (fire)        
-        (let ((s (new shot%
-                      (_radius _shot-radius)
-                      (_x-speed (* _shot-speed (cos _tower-angle)))
-                      (_y-speed (* _shot-speed (sin _tower-angle)))
-                      (_x-coord (+ _x-coord (* (cos _tower-angle) (+ _radius _tower-length))))
-                      (_y-coord (+ _y-coord (* (sin _tower-angle) (+ _radius _tower-length)))))))
-          (set! *shot-list* (append (list s) *shot-list*))
-          (set! _allowed-to-fire #f)
-          (new timer%
-               (notify-callback reset-allowed-to-fire)
-               (interval _freeze-time)
-               (just-once? #t))))
+      (let ((s (new shot%
+                    (_radius _shot-radius)
+                    (_x-speed (* _shot-speed (cos _tower-angle)))
+                    (_y-speed (* _shot-speed (sin _tower-angle)))
+                    (_x-coord (+ _x-coord (* (cos _tower-angle) (+ _radius _tower-length))))
+                    (_y-coord (+ _y-coord (* (sin _tower-angle) (+ _radius _tower-length)))))))
+        (set! *shot-list* (append (list s) *shot-list*))
+        (set! _allowed-to-fire #f)
+        (new timer%
+             (notify-callback reset-allowed-to-fire)
+             (interval _freeze-time)
+             (just-once? #t))))
     
     (define/public (update)
       (cond
@@ -137,8 +135,7 @@
       (cond
         ((send *kh* pressed? shoot-key)
          (unless (not _allowed-to-fire)   
-           (fire))))
-      )
+           (fire)))))
     
     
     
