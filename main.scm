@@ -5,6 +5,8 @@
 (load "power-up.scm")
 (load "creator-of-power-ups.scm")
 
+(display "test")
+
 (define *kh* (new keyboard-handler%))
 (define *shot-list* '())
 (define *list-of-power-ups* '())
