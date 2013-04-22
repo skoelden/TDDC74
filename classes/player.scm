@@ -25,7 +25,7 @@
     (define _shot-radius 1)
     
     (define _allowed-to-fire #t)
-    (define _freeze-time 1000)
+    (define _freeze-time 500)
     
     
     
@@ -83,8 +83,23 @@
     (define/public (change-tower-length value)
       (set! _tower-length (+ value _tower-length)))
     
+    (define/public (get-radius!)
+      _radius)
+    
+    (define/public (get-x-coord!)
+      _x-coord)
+      
+    (define/public (get-y-coord!)
+      _y-coord)
+    
+    (define/public (change-speed value)
+      (set! _speed (+ _speed value)))
+    
+    
     (define (reset-allowed-to-fire)
       (set! _allowed-to-fire #t))
+    
+   
     
     (define (fire)        
         (let ((s (new shot%
@@ -136,7 +151,9 @@
             (* (+ _radius _tower-length) (cos _tower-angle))
             (* (+ _radius _tower-length) (sin _tower-angle)))
       
-      (send dc translate (- 0 _x-coord) (- 0 _y-coord)))))
+      (send dc translate (- 0 _x-coord) (- 0 _y-coord)))
+    
+    (set! *list-of-players* (append (list this) *list-of-players*))))
 
 
 

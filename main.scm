@@ -1,10 +1,14 @@
-(load "classes/player.scm")
+(load "player.scm")
 (load "graphics.scm")
-(load "classes/keyboard-handler.scm")
-(load "classes/shot.scm")
+(load "keyboard-handler.scm")
+(load "shot.scm")
+(load "power-up.scm")
+(load "creator-of-power-ups.scm")
 
 (define *kh* (new keyboard-handler%))
 (define *shot-list* '())
+(define *list-of-power-ups* '())
+(define *list-of-players* '())
 
 (define p (new player%
                (right-key #\d)
@@ -31,3 +35,4 @@
 
 (define *my-timer* (new timer% [notify-callback tick!]))
 (send *my-timer* start 16)
+

@@ -10,7 +10,11 @@
   (for-each (lambda (obj)
              (send obj update)
               (draw-object obj dc))
-           *shot-list*))
+           *shot-list*)
+  (for-each (lambda (obj)
+             (send obj update)
+              (draw-object obj dc))
+           *list-of-power-ups*))
   
   
 (define game-canvas%
