@@ -3,6 +3,8 @@
 (load "classes/keyboard-handler.scm")
 (load "classes/shot.scm")
 
+(display "test")
+
 (define *kh* (new keyboard-handler%))
 (define *shot-list* '())
 
