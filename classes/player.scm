@@ -19,10 +19,11 @@
     
     (define _tower-angle 0) ;[int] vinkel x-axel -> kanontorn medurs i radianer
     (define _tower-length 5) ;[int]
-    (define _tower-speed (* 3 (* (/ 1 180) pi)))
+    (define _tower-speed (* 1 (* (/ 1 180) pi)))
     
-    (define _shot-speed 5)
-    (define _shot-radius 1)
+    (define _shot-speed 0)
+    (define _shot-radius 2)
+    (define _shot-damage 1)
     
     (define _allowed-to-fire #t)
     (define _freeze-time 500)
@@ -105,15 +106,30 @@
                     (_x-speed (* _shot-speed (cos _tower-angle)))
                     (_y-speed (* _shot-speed (sin _tower-angle)))
                     (_x-coord (+ _x-coord (* (cos _tower-angle) (+ _radius _tower-length))))
-                    (_y-coord (+ _y-coord (* (sin _tower-angle) (+ _radius _tower-length)))))))
-        (set! *shot-list* (append (list s) *shot-list*))
+                    (_y-coord (+ _y-coord (* (sin _tower-angle) (+ _radius _tower-length))))
+                    (_shot-damage _shot-damage))))
+        (set! *list-of-shots* (append (list s) *list-of-shots*))
         (set! _allowed-to-fire #f)
         (new timer%
              (notify-callback reset-allowed-to-fire)
              (interval _freeze-time)
              (just-once? #t))))
     
+    (define (get-hits)
+      (for-each (lambda (shot)
+                  (if (> (+ _radius (send shot get-radius)) (sqrt (+ (sqr (- _x-coord (send shot get-x-coord)))
+                                                                     (sqr (- _y-coord (send shot get-y-coord))))))
+                      (begin
+                        (decrease-health (send shot get-shot-damage))
+                        (send shot delete))
+                      (void)))
+                *list-of-shots*))
+    
     (define/public (update)
+      (move-by-keypress)
+      (get-hits))
+    
+    (define (move-by-keypress)
       (cond
         ((send *kh* pressed? right-key)
          (move-x _speed)))
@@ -138,9 +154,9 @@
            (fire)))))
     
     
-    
     (define/public (draw dc)
       (send dc translate _x-coord _y-coord)
+      
       (send dc draw-ellipse (- 0 _radius) (- 0 _radius) (* 2 _radius) (* 2 _radius))
       (send dc draw-line
             (* _radius (cos _tower-angle))
@@ -148,9 +164,14 @@
             (* (+ _radius _tower-length) (cos _tower-angle))
             (* (+ _radius _tower-length) (sin _tower-angle)))
       
-      (send dc translate (- 0 _x-coord) (- 0 _y-coord)))
-    
-    (set! *list-of-players* (append (list this) *list-of-players*))))
-
-
-
+      (let-values (((text-width text-height b s) (send dc get-text-extent (number->string _health))))
+        (send dc draw-text (number->string _health) (- 0 (/ text-width 2)) (- 0 (/ text-height 2))))
+        
+        
+        (send dc translate (- 0 _x-coord) (- 0 _y-coord)))
+      
+      (set! *list-of-players* (append (list this) *list-of-players*))))
+  
+  
+  
+  

@@ -10,7 +10,7 @@
   (for-each (lambda (obj)
              (send obj update)
               (draw-object obj dc))
-           *shot-list*)
+           *list-of-shots*)
   (for-each (lambda (obj)
              (send obj update)
               (draw-object obj dc))

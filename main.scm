@@ -1,12 +1,12 @@
-(load "player.scm")
+(load "classes/player.scm")
 (load "graphics.scm")
-(load "keyboard-handler.scm")
-(load "shot.scm")
-(load "power-up.scm")
+(load "classes/keyboard-handler.scm")
+(load "classes/shot.scm")
+(load "classes/power-up.scm")
 (load "creator-of-power-ups.scm")
 
 (define *kh* (new keyboard-handler%))
-(define *shot-list* '())
+(define *list-of-shots* '())
 (define *list-of-power-ups* '())
 (define *list-of-players* '())
 
@@ -26,7 +26,7 @@
                (down-key #\k)
                (tower-cw-key #\p)
                (tower-ccw-key #\o)
-               (shoot-key #\u)))
+               (shoot-key #\å)))
 
 (define (tick!)
   (send p update)

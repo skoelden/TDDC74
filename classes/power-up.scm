@@ -46,9 +46,20 @@
     (define/public (delete)
       (set! *list-of-power-ups* (remove this *list-of-power-ups* eq?)))
     
+    (define (get-hits)
+      (for-each (lambda (shot)
+                 (if (and (and (< (- _x-coord (/ _length 2)) (send shot get-x-coord)) (< (send shot get-x-coord) (+ _x-coord (/ _length 2)))) 
+                          (and (< (- _y-coord (/ _length 2)) (send shot get-y-coord)) (< (send shot get-y-coord) (+ _y-coord (/ _length 2)))))
+                     (begin
+                       (delete)
+                       (send shot delete))
+                      (void)))
+                *list-of-shots*))
+    
     (set! *list-of-power-ups* (append (list this) *list-of-power-ups*))
     
     (define/public (update)
+      (get-hits)
       (unless (not (hit-by-player?))
         (on-collision (hit-by-player?))))))
 
