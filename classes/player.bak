@@ -21,7 +21,7 @@
     (define _tower-length 5) ;[int]
     (define _tower-speed (* 1 (* (/ 1 180) pi)))
     
-    (define _shot-speed 10)
+    (define _shot-speed 0)
     (define _shot-radius 2)
     (define _shot-damage 1)
     
