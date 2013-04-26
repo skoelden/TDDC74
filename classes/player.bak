@@ -21,7 +21,7 @@
     (define _tower-length 5) ;[int]
     (define _tower-speed (* 1 (* (/ 1 180) pi)))
     
-    (define _shot-speed 10)
+    (define _shot-speed 0)
     (define _shot-radius 2)
     (define _shot-damage 1)
     
@@ -82,13 +82,7 @@
     ;-----------------------
     (define/public (change-tower-length value)
       (set! _tower-length (+ value _tower-length)))
-
-    (define/public (move-to-x-coord value)
-      (set! _x-coord value))
     
-    (define/public (move-to-y-coord value)
-      (set! _y-coord value))
-
     (define/public (get-radius!)
       _radius)
     
