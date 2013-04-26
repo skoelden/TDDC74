@@ -82,7 +82,13 @@
     ;-----------------------
     (define/public (change-tower-length value)
       (set! _tower-length (+ value _tower-length)))
+
+    (define/public (move-to-x-coord value)
+      (set! _x-coord value))
     
+    (define/public (move-to-y-coord value)
+      (set! _y-coord value))
+
     (define/public (get-radius!)
       _radius)
     
