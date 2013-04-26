@@ -38,7 +38,7 @@
           (void)))
     
     (define/public (delete)
-      (send *game-board* delete-shot-from-list-of-shots this)) ;Tar bort skottet från listan över alla skott
+      (set! *list-of-shots* (remove this *list-of-shots* eq?))) ;Tar bort skottet från listan över alla skott
     
-    (send *game-board* add-shot-to-list-of-shots this)))
+    ))
     

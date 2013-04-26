@@ -4,22 +4,17 @@
                          [label "En ram"]))
 
 (define (render-fn canvas dc)
-  
-  (draw-object (send *game-board* get-map) dc)
-  
-  (for-each (lambda (player)
-             (send player update)
-              (draw-object player dc))
-           (send *game-board* get-list-of-players))
+  (draw-object p dc)
+  (draw-object p2 dc)
  
   (for-each (lambda (obj)
              (send obj update)
               (draw-object obj dc))
-           (send *game-board* get-list-of-shots))
+           *list-of-shots*)
   (for-each (lambda (obj)
              (send obj update)
               (draw-object obj dc))
-           (send *game-board* get-list-of-power-ups)))
+           *list-of-power-ups*))
   
   
 (define game-canvas%
