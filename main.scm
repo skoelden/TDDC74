@@ -6,6 +6,7 @@
 (load "classes/power-up.scm")
 (load "classes/game-board.scm")
 (load "classes/map.scm")
+(load "classes/map-tile.scm")
 
 (require picturing-programs)
 
@@ -14,7 +15,17 @@
                           [_width 1000]
                           [_height 1000]
                           [_map (new map%
-                                     [path "maps/level1.png"])]
+                                     [*list-of-tiles* (list
+                                                       (new map-tile%
+                                                            [_x 100]
+                                                            [_y 150]
+                                                            [_width 100]
+                                                            [_height 100])
+                                                       (new map-tile%
+                                                            [_x 200]
+                                                            [_y 300]
+                                                            [_width 40]
+                                                            [_height 40]))])]
                           [_amount-of-allowed-power-ups 5]))
 (define *kh* (new keyboard-handler%))
 

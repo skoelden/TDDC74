@@ -20,7 +20,7 @@
     (define/public (hit-by-player?)
       (let ((player-hit #f))
         (for-each (lambda (player)
-                    (if (>= (+ (/ _length 2) (send player get-radius!)) (sqrt (+ (sqr (- _x-coord (send player get-x-coord!))) (sqr (- _y-coord (send player get-y-coord!))))))
+                    (if (>= (+ (/ _length 2) (send player get-radius)) (sqrt (+ (sqr (- _x-coord (send player get-x-coord))) (sqr (- _y-coord (send player get-y-coord))))))
                         (set! player-hit player) 
                         (void)))
                   (send *game-board* get-list-of-players))

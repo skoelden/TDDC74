@@ -19,6 +19,16 @@
     (define/public (get-height)
       _height)
     
+    (define/public (get-corners)
+      (list (cons (- _x (/ _width 2))
+                  (- _y (/ _height 2)))
+            (cons (- _x (/ _width 2))
+                  (+ _y (/ _height 2)))
+            (cons (+ _x (/ _width 2))
+                  (- _y (/ _height 2)))
+            (cons (+ _x (/ _width 2))
+                  (+ _y (/ _height 2)))))
+    
     (define/public (draw dc)
       (send dc translate (- _x (/ _width 2)) (- _y (/ _height 2)))
       (send dc draw-rectangle 0 0 _width _height)

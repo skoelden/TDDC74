@@ -6,11 +6,13 @@
                             (_y-coord (random (send *canvas* get-height)))
                             (_length 20)
                             (_duration 10000))))
+ 
       
 (define (random-in-list list int)
   (if (= 0 int)
       (car list)
       (random-in-list (cdr list) (- int 1))))
+
 
 (define *power-up-types* '()) ;Listan över de power-up typer som skall kunna slumpas ut på spelplanen
 
@@ -21,5 +23,5 @@
 
 (new timer%
                (notify-callback create-power-up)
-               (interval 1000)
+               (interval 10000)
                (just-once? #f))

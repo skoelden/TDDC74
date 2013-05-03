@@ -60,14 +60,25 @@
     ;Arg: value[int]
     ;-----------------------
     (define/public (move-x value)
-      (set! _x-coord (+ _x-coord value)))
+      (if (= 0 value)
+          (void)
+          (if (send (send *game-board* get-map) moveable-at-position (+ _x-coord value) _y-coord _radius this)
+              (set! _x-coord (+ _x-coord value))
+              (move-x (- value (/ value (abs value)))))))
+    
+    
     
     ;-----------------------
     ;Beskr: ändrar spelarens y-koordinat
     ;Arg: value[int]
     ;-----------------------
     (define/public (move-y value)
-      (set! _y-coord (+ _y-coord value)))
+      (if (= 0 value)
+          (void)
+          (if (send (send *game-board* get-map) moveable-at-position _x-coord (+ _y-coord value) _radius this)
+              (set! _y-coord (+ _y-coord value))
+              (move-y (- value (/ value (abs value)))))))
+    
     
     ;-----------------------
     ;Beskr: ändrar kanontornets vinkel cw
@@ -89,17 +100,26 @@
     (define/public (move-to-y-coord value)
       (set! _y-coord value))
     
-    (define/public (get-radius!)
+    (define/public (get-radius)
       _radius)
     
-    (define/public (get-x-coord!)
+    (define/public (get-x-coord)
       _x-coord)
     
-    (define/public (get-y-coord!)
+    (define/public (get-y-coord)
       _y-coord)
     
     (define/public (change-speed value)
       (set! _speed (+ _speed value)))
+    
+    (define (random-spawn)
+      (let ((random-x-coord (random (send *game-board* width)))
+            (random-y-coord (random (send *game-board* height))))
+        (if (send (send *game-board* get-map) moveable-at-position random-x-coord random-y-coord _radius this)
+            (begin
+              (set! _x-coord random-x-coord)
+              (set! _y-coord random-y-coord))
+            (random-spawn))))
     
     
     (define (reset-allowed-to-fire)
@@ -120,63 +140,64 @@
            (notify-callback reset-allowed-to-fire)
            (interval _freeze-time)
            (just-once? #t)))
-  
-  (define (get-hits)
-    (for-each (lambda (shot)
-                (if (> (+ _radius (send shot get-radius)) (sqrt (+ (sqr (- _x-coord (send shot get-x-coord)))
-                                                                   (sqr (- _y-coord (send shot get-y-coord))))))
-                    (begin
-                      (decrease-health (send shot get-shot-damage))
-                      (send shot delete))
-                    (void)))
-              (send *game-board* get-list-of-shots)))
-  
-  (define/public (update)
-    (move-by-keypress)
-    (get-hits))
-  
-  (define (move-by-keypress)
-    (cond
-      ((send *kh* pressed? right-key)
-       (move-x _speed)))
-    (cond
-      ((send *kh* pressed? left-key)
-       (move-x (- 0 _speed))))
-    (cond
-      ((send *kh* pressed? up-key)
-       (move-y (- 0 _speed))))
-    (cond
-      ((send *kh* pressed? down-key)
-       (move-y _speed)))
-    (cond
-      ((send *kh* pressed? tower-cw-key)
-       (change-tower-angle _tower-speed)))
-    (cond
-      ((send *kh* pressed? tower-ccw-key)
-       (change-tower-angle (- 0 _tower-speed))))
-    (cond
-      ((send *kh* pressed? shoot-key)
-       (unless (not _allowed-to-fire)   
-         (fire)))))
-  
-  
-  (define/public (draw dc)
-    (send dc translate _x-coord _y-coord)
     
-    (send dc draw-ellipse (- 0 _radius) (- 0 _radius) (* 2 _radius) (* 2 _radius))
-    (send dc draw-line
-          (* _radius (cos _tower-angle))
-          (* _radius (sin _tower-angle))
-          (* (+ _radius _tower-length) (cos _tower-angle))
-          (* (+ _radius _tower-length) (sin _tower-angle)))
+    (define (get-hits)
+      (for-each (lambda (shot)
+                  (if (> (+ _radius (send shot get-radius)) (sqrt (+ (sqr (- _x-coord (send shot get-x-coord)))
+                                                                     (sqr (- _y-coord (send shot get-y-coord))))))
+                      (begin
+                        (decrease-health (send shot get-shot-damage))
+                        (send shot delete))
+                      (void)))
+                (send *game-board* get-list-of-shots)))
     
-    (let-values (((text-width text-height b s) (send dc get-text-extent (number->string _health))))
-      (send dc draw-text (number->string _health) (- 0 (/ text-width 2)) (- 0 (/ text-height 2))))
+    (define/public (update)
+      (move-by-keypress)
+      (get-hits))
+    
+    (define (move-by-keypress)
+      (cond
+        ((send *kh* pressed? right-key)
+         (move-x _speed)))
+      (cond
+        ((send *kh* pressed? left-key)
+         (move-x (- 0 _speed))))
+      (cond
+        ((send *kh* pressed? up-key)
+         (move-y (- 0 _speed))))
+      (cond
+        ((send *kh* pressed? down-key)
+         (move-y _speed)))
+      (cond
+        ((send *kh* pressed? tower-cw-key)
+         (change-tower-angle _tower-speed)))
+      (cond
+        ((send *kh* pressed? tower-ccw-key)
+         (change-tower-angle (- 0 _tower-speed))))
+      (cond
+        ((send *kh* pressed? shoot-key)
+         (unless (not _allowed-to-fire)   
+           (fire)))))
     
     
-    (send dc translate (- 0 _x-coord) (- 0 _y-coord)))
-  
-  (send *game-board* add-player-to-list-of-players this)))
+    (define/public (draw dc)
+      (send dc translate _x-coord _y-coord)
+      
+      (send dc draw-ellipse (- 0 _radius) (- 0 _radius) (* 2 _radius) (* 2 _radius))
+      (send dc draw-line
+            (* _radius (cos _tower-angle))
+            (* _radius (sin _tower-angle))
+            (* (+ _radius _tower-length) (cos _tower-angle))
+            (* (+ _radius _tower-length) (sin _tower-angle)))
+      
+      (let-values (((text-width text-height b s) (send dc get-text-extent (number->string _health))))
+        (send dc draw-text (number->string _health) (- 0 (/ text-width 2)) (- 0 (/ text-height 2))))
+      
+      
+      (send dc translate (- 0 _x-coord) (- 0 _y-coord)))
+    
+    (send *game-board* add-player-to-list-of-players this)
+    (random-spawn)))
 
 
 

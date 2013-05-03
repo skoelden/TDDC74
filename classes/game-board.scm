@@ -10,15 +10,17 @@
     (define *list-of-shots* '())
     (define *list-of-power-ups* '())
     (define *list-of-players* '())
-   
+    
+    
+    (define/public (set!-map map)
+      (set! *map* map))
     
     (define (tick!)
       (send *canvas* refresh))
     
     (define *my-timer* (new timer% [notify-callback tick!]))
     (send *my-timer* start 16)
-    
-    
+        
     (define/public (width)
       _width)
     
