@@ -1,7 +1,7 @@
 (define *game-window* (new frame% 
                          [width 1000]
                          [height 1000]
-                         [label "En ram"]))
+                         [label "Mexican sombrero fight"]))
 
 (define (render-fn canvas dc)
   

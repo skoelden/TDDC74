@@ -2,14 +2,18 @@
   (class object%
     (super-new)
     
-    (init-field _x-coord)
-    (init-field _y-coord)
     (init-field _length)
     (init-field _duration)
+    
+    (define _x-coord 0)
+    (define _y-coord 0)
     
     
     (field (_player-who-picked-up-power-up #f)
            (_image #f))
+    
+    (define/public (get-radius)
+      (/ _length 2))
     
     (define/public (draw dc)
       (send dc translate _x-coord _y-coord)
@@ -59,6 +63,16 @@
                       (void)))
                 (send *game-board* get-list-of-shots)))
     
+    (define (random-spawn)
+      (let ((random-x-coord (random (send *game-board* width)))
+            (random-y-coord (random (send *game-board* height))))
+        (if (send (send *game-board* get-map) moveable-at-position random-x-coord random-y-coord this)
+            (begin
+              (set! _x-coord random-x-coord)
+              (set! _y-coord random-y-coord))
+            (random-spawn))))
+    
+    (random-spawn)
     (send *game-board* add-power-up this)
     
     (define/public (update)

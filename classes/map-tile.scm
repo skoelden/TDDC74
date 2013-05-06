@@ -30,6 +30,10 @@
                   (+ _y (/ _height 2)))))
     
     (define/public (draw dc)
-      (send dc translate (- _x (/ _width 2)) (- _y (/ _height 2)))
-      (send dc draw-rectangle 0 0 _width _height)
-      (send dc translate (- 0 (- _x (/ _width 2))) (- 0 (- _y (/ _height 2)))))))
+      (let ((old-brush (send dc get-brush)))
+        
+        (send dc translate (- _x (/ _width 2)) (- _y (/ _height 2)))
+        (send dc set-brush (new brush% [style 'solid]))
+        (send dc draw-rectangle 0 0 _width _height)
+        (send dc set-brush old-brush)
+        (send dc translate (- 0 (- _x (/ _width 2))) (- 0 (- _y (/ _height 2))))))))

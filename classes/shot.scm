@@ -22,7 +22,7 @@
       _shot-damage)
     
     (define/public (update)
-      (out-of-sight)
+      (moveable?)
       (set! _x-coord (+ _x-coord _x-speed))
       (set! _y-coord (+ _y-coord _y-speed))) ;Uppdaterar skottets koordinater
     
@@ -31,11 +31,10 @@
       (send dc draw-rectangle (- 0 _radius) (- 0 _radius) (* 2 _radius) (* 2 _radius))
       (send dc translate (- 0 _x-coord) (- 0 _y-coord))) ;Ritar ut skottet
     
-    (define (out-of-sight)
-      
-      (if (or (> 0 _x-coord) (> 0 _y-coord) (< (send *canvas* get-width) _x-coord) (< (send *canvas* get-height) _y-coord))
-          (delete)
-          (void)))
+    (define (moveable?)
+      (if (send (send *game-board* get-map) moveable-at-position _x-coord _y-coord this)
+          (void)
+          (delete)))
     
     (define/public (delete)
       (send *game-board* delete-shot-from-list-of-shots this)) ;Tar bort skottet från listan över alla skott

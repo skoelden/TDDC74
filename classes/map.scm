@@ -12,28 +12,28 @@
                   (draw-object tile dc))
                 *list-of-tiles*))
     
-    (define/public (moveable-at-position x-coord y-coord radius-of-player ref-to-self)
+    (define/public (moveable-at-position x-coord y-coord ref-to-self)
       (let ((moveable #t))
         ;Kollar mot tiles
         (for-each (lambda (tile)
                     (cond
                       ((or
-                        (and (>= x-coord (- (send tile get-x-coord) (/ (send tile get-width) 2) radius-of-player)) ; 
-                             (<= x-coord (+ (send tile get-x-coord) (/ (send tile get-width) 2) radius-of-player)) ; *|-----|*
+                        (and (>= x-coord (- (send tile get-x-coord) (/ (send tile get-width) 2) (send ref-to-self get-radius))) ; 
+                             (<= x-coord (+ (send tile get-x-coord) (/ (send tile get-width) 2) (send ref-to-self get-radius))) ; *|-----|*
                              (>= y-coord (- (send tile get-y-coord) (/ (send tile get-height) 2)))                 ; *|tile |*        
                              (<= y-coord (+ (send tile get-y-coord) (/ (send tile get-height) 2))))                ; *|-----|*        *
                         ;           Kollar *
                         
                         (and (>= x-coord (- (send tile get-x-coord) (/ (send tile get-width) 2)))                     ; *******
                              (<= x-coord (+ (send tile get-x-coord) (/ (send tile get-width) 2)))                     ; |-----|
-                             (>= y-coord (- (send tile get-y-coord) (/ (send tile get-height) 2) radius-of-player))   ; |tile |
-                             (<= y-coord (+ (send tile get-y-coord) (/ (send tile get-height) 2) radius-of-player))))  ; |-----|
+                             (>= y-coord (- (send tile get-y-coord) (/ (send tile get-height) 2) (send ref-to-self get-radius)))   ; |tile |
+                             (<= y-coord (+ (send tile get-y-coord) (/ (send tile get-height) 2) (send ref-to-self get-radius)))))  ; |-----|
                        ; *******  Kollar ******
                        
                        (set! moveable #f)))
                     
                     (for-each (lambda (corner)
-                                (if (>= radius-of-player (sqrt (+ (sqr (- x-coord (car corner)))
+                                (if (>= (send ref-to-self get-radius) (sqrt (+ (sqr (- x-coord (car corner)))
                                                                   (sqr (- y-coord (cdr corner))))))
                                     (set! moveable #f)
                                     (void)))

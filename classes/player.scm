@@ -14,19 +14,19 @@
     (define _health 10) ;[int]
     (define _x-coord 0) ;[int]
     (define _y-coord 0) ;[int]
-    (define _speed 1) ;[int] pixlar/uppdatering
-    (define _radius 20)
+    (define _speed 2) ;[int] pixlar/uppdatering
+    (define _radius 30)
     
     (define _tower-angle 0) ;[int] vinkel x-axel -> kanontorn medurs i radianer
-    (define _tower-length 5) ;[int]
+    (define _tower-length 10) ;[int]
     (define _tower-speed (* 1 (* (/ 1 180) pi)))
     
-    (define _shot-speed 10)
+    (define _shot-speed 25)
     (define _shot-radius 2)
-    (define _shot-damage 1)
+    (define _shot-damage 10)
     
     (define _allowed-to-fire #t)
-    (define _freeze-time 1000)
+    (define _freeze-time 3000)
     
     
     
@@ -46,7 +46,9 @@
     ;Arg: value[int]
     ;-----------------------
     (define/public (decrease-health value)
-      (set! _health (- _health value)))
+      (if (<= (- _health value) 0)
+          (send *game-board* delete-player-from-list-of-players this)
+          (set! _health (- _health value))))
     
     ;-----------------------
     ;Beskr: ökar spelarens hälsa med value
@@ -62,7 +64,7 @@
     (define/public (move-x value)
       (if (= 0 value)
           (void)
-          (if (send (send *game-board* get-map) moveable-at-position (+ _x-coord value) _y-coord _radius this)
+          (if (send (send *game-board* get-map) moveable-at-position (+ _x-coord value) _y-coord this)
               (set! _x-coord (+ _x-coord value))
               (move-x (- value (/ value (abs value)))))))
     
@@ -75,7 +77,7 @@
     (define/public (move-y value)
       (if (= 0 value)
           (void)
-          (if (send (send *game-board* get-map) moveable-at-position _x-coord (+ _y-coord value) _radius this)
+          (if (send (send *game-board* get-map) moveable-at-position _x-coord (+ _y-coord value) this)
               (set! _y-coord (+ _y-coord value))
               (move-y (- value (/ value (abs value)))))))
     
@@ -115,7 +117,7 @@
     (define (random-spawn)
       (let ((random-x-coord (random (send *game-board* width)))
             (random-y-coord (random (send *game-board* height))))
-        (if (send (send *game-board* get-map) moveable-at-position random-x-coord random-y-coord _radius this)
+        (if (send (send *game-board* get-map) moveable-at-position random-x-coord random-y-coord this)
             (begin
               (set! _x-coord random-x-coord)
               (set! _y-coord random-y-coord))
