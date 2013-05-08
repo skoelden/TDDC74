@@ -33,7 +33,7 @@
                                                             [_x 500]
                                                             [_y 500]
                                                             [_width 300]
-                                                            [_height 200])
+                                                            [_height 50])
                                                        (new map-tile%
                                                             [_x 150]
                                                             [_y 850]
@@ -60,6 +60,15 @@
      (tower-cw-key #\y)
      (tower-ccw-key #\t)
      (shoot-key #\u))
+
+(new player%
+     (right-key #\b)
+     (left-key #\c)
+     (up-key #\g)
+     (down-key #\v)
+     (tower-cw-key 'numpad2)
+     (tower-ccw-key 'numpad1)
+     (shoot-key 'numpad3))
 
 (new player%
      (right-key #\l)
