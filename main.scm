@@ -57,27 +57,27 @@
      (left-key #\a)
      (up-key #\w)
      (down-key #\s)
-     (tower-cw-key #\y)
+     (tower-cw-key #\u)
      (tower-ccw-key #\t)
-     (shoot-key #\u))
+     (shoot-key #\y))
 
 (new player%
      (right-key #\b)
      (left-key #\c)
      (up-key #\g)
      (down-key #\v)
-     (tower-cw-key 'numpad2)
+     (tower-cw-key 'numpad3)
      (tower-ccw-key 'numpad1)
-     (shoot-key 'numpad3))
+     (shoot-key 'numpad2))
 
 (new player%
      (right-key #\l)
      (left-key #\j)
      (up-key #\i)
      (down-key #\k)
-     (tower-cw-key #\p)
+     (tower-cw-key #\å)
      (tower-ccw-key #\o)
-     (shoot-key #\å))
+     (shoot-key #\p))
 
 ;(define (tick!)
  ; (send *canvas* refresh))

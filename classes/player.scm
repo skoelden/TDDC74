@@ -16,7 +16,6 @@
     (define _y-coord 0) ;[int]
     (define _speed 3) ;[int] pixlar/uppdatering
     (define _radius 30)
-    (define _inverted-movement #f)
     
     (define _tower-angle 0) ;[int] vinkel x-axel -> kanontorn medurs i radianer
     (define _tower-length 15) ;[int]
@@ -32,9 +31,43 @@
     (define _bitmap (read-bitmap "images/sombrero.png"
                                  'unknown/alpha))
     
+    (define _amount-of-mez-taken 0)
+    
     
     
     ;;Datareturnerare
+    
+    (define/public (invert-movement-on-other-players)
+      (for-each (lambda (player)
+                  (if (eq? player this)
+                      (void)
+                      (send player inverted-movement)))
+                (send *game-board* get-list-of-players)))
+    
+    (define/public (un-invert-movement-on-other-players)
+      (for-each (lambda (player)
+                  (if (eq? player this)
+                      (void)
+                      (send player un-inverted-movement)))
+                (send *game-board* get-list-of-players)))
+                    
+    
+    (define/public (inverted-movement)
+     (set! _amount-of-mez-taken (+ _amount-of-mez-taken 1))
+      (if (= _amount-of-mez-taken 1)
+          (begin
+            (set! _tower-speed (* -1 _tower-speed))
+            (set! _speed (* -1 _speed)))
+          (void)))
+    
+    (define/public (un-inverted-movement)
+      (set! _amount-of-mez-taken (- _amount-of-mez-taken 1))
+      (if (= 0 _amount-of-mez-taken)
+          (begin
+            (set! _tower-speed (* -1 _tower-speed))
+            (set! _speed (* -1 _speed)))
+          (void)))
+    
     
     ;-----------------------
     ;Beskr: returnerar spelarens hälsa
@@ -66,8 +99,6 @@
     ;Arg: value[int]
     ;-----------------------
     (define/public (move-x value)
-      (unless (not _inverted-movement)
-        (set value (* -1 value)))
       (if (= 0 value)
           (void)
           (if (send (send *game-board* get-map) moveable-at-position (+ _x-coord value) _y-coord this)
@@ -81,8 +112,6 @@
     ;Arg: value[int]
     ;-----------------------
     (define/public (move-y value)
-      (unless (not _inverted-movement)
-        (set value (* -1 value)))
       (if (= 0 value)
           (void)
           (if (send (send *game-board* get-map) moveable-at-position _x-coord (+ _y-coord value) this)
@@ -95,8 +124,6 @@
     ;Arg: value[int]
     ;-----------------------
     (define/public (change-tower-angle value)
-      (unless (not _inverted-movement)
-        (set value (* -1 value)))
       (set! _tower-angle (+ value _tower-angle)))
     
     ;-----------------------
@@ -113,7 +140,9 @@
       (set! _freeze-time (round (* _freeze-time factor))))
     
     (define/public (increase-tower-speed value)
-      (set! _tower-speed (+ _tower-speed value)))
+      (if (>= _tower-speed 0)
+          (set! _tower-speed (+ _tower-speed value))
+          (set! _tower-speed (- _tower-speed value))))
     
     (define/public (move-to-x-coord value)
       (set! _x-coord value))
@@ -130,29 +159,11 @@
     (define/public (get-y-coord)
       _y-coord)
     
-    (define/public (change-speed value)
-      (set! _speed (+ _speed value)))
-    
-    (define/public (invert-movement)
-      (set! _inverted-movement #t))
-    
-    (define/public (un-invert-movement)
-      (set! _inverted-movement #f))
-    
-    (define/public (invert-movement-on-the-other-players)
-      (let ((commanded-player this))
-          (for-each (lambda (player) 
-                      (unless (eq? commanded-player this)
-                        (invert-movement)))
-                    (send *game-board* get-list-of-players))))
-    
-    (define/public (un-invert-movement-on-the-other-players)
-      (let ((commanded-player this))
-          (for-each (lambda (player) 
-                      (unless (eq? commanded-player this)
-                        (un-invert-movement)))
-                    (send *game-board* get-list-of-players))))
-    
+    (define/public (increase-speed value)
+      (if (>= _speed 0)
+          (set! _speed (+ _speed value))
+          (set! _speed (- _speed value))))
+
     
     (define (random-spawn)
       (let ((random-x-coord (random (send *game-board* width)))

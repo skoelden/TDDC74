@@ -93,11 +93,11 @@
     (set! _image (read-bitmap "images/power-up-speed.png"))
     
     (define/override (reset-power-up)
-      (send _player-who-picked-up-power-up change-speed -1)
+      (send _player-who-picked-up-power-up increase-speed -1)
       (send _player-who-picked-up-power-up increase-tower-speed (- (* (/ 1 180) pi))))
     
     (define/override (apply-power-up player)
-      (send player change-speed 1)
+      (send player increase-speed 1)
       (send player increase-tower-speed (* (/ 1 180) pi)))))
 (add-new-power-up-type power-up-speed%)
 
@@ -126,12 +126,12 @@
     (define/override (apply-power-up player)
       (send player increase-shot-damage 1)
       (send player increase-fire-ratio (/ 1 2))
-      (send player change-speed -1))
+      (send player increase-speed -1))
     
     (define/override (reset-power-up)
       (send _player-who-picked-up-power-up increase-shot-damage -1)
       (send _player-who-picked-up-power-up increase-fire-ratio 2)
-      (send _player-who-picked-up-power-up change-speed 1))))
+      (send _player-who-picked-up-power-up increase-speed 1))))
 
 (add-new-power-up-type power-up-weapon%)
 
@@ -142,14 +142,14 @@
     (inherit-field _player-who-picked-up-power-up)
     (inherit-field _image)
     
-    (set! _image (read-bitmap "images/power-up-weapon.png"))
+    (set! _image (read-bitmap "images/power-up-mez.png"))
     
     (define/override (apply-power-up player)
-      (send player invert-movement-on-the-other-players))
+      (send player invert-movement-on-other-players))
     
     
     (define/override (reset-power-up)
-      (send _player-who-picked-up-power-up un-invert-movement-on-the-other-players))))
+      (send _player-who-picked-up-power-up un-invert-movement-on-other-players))))
 
 (add-new-power-up-type power-up-mez%)
 
