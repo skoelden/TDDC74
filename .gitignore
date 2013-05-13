@@ -36,3 +36,10 @@
 Icon?
 ehthumbs.db
 Thumbs.db
+
+# DrRacket shitty files #
+#########################
+
+*.bak
+*.1
+
