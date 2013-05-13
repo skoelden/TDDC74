@@ -41,9 +41,11 @@
     
     (define/public (reset-power-up);Hör ihop med apply-power-up, gör det motsatta.
       (void))
-    
+       
     (define/public (apply-power-up player) ;Denna overridas i subklasserna för att få olika typer av power-ups.
       (void))
+    
+    
     
     (define (start-timer!) (new timer% ;Startar en timer som sätter igång reset-power-up när tiden duration har gått.
                                 (notify-callback reset-power-up-for-timer)
@@ -91,10 +93,12 @@
     (set! _image (read-bitmap "images/power-up-speed.png"))
     
     (define/override (reset-power-up)
-      (send _player-who-picked-up-power-up change-speed -1))
+      (send _player-who-picked-up-power-up change-speed -1)
+      (send _player-who-picked-up-power-up increase-tower-speed (- (* (/ 1 180) pi))))
     
     (define/override (apply-power-up player)
-      (send player change-speed 1))))
+      (send player change-speed 1)
+      (send player increase-tower-speed (* (/ 1 180) pi)))))
 (add-new-power-up-type power-up-speed%)
 
 ;;Ökar spelarens hälsa med 1
@@ -110,7 +114,44 @@
       (send player increase-health 1))))
 (add-new-power-up-type power-up-health%)
 
+;;Ökar skottskada och minskar freeze-timern för fire
+(define power-up-weapon%
+  (class power-up%
+    (super-new)
+    (inherit-field _player-who-picked-up-power-up)
+    (inherit-field _image)
+    
+    (set! _image (read-bitmap "images/power-up-weapon.png"))
+    
+    (define/override (apply-power-up player)
+      (send player increase-shot-damage 1)
+      (send player increase-fire-ratio (/ 1 2))
+      (send player change-speed -1))
+    
+    (define/override (reset-power-up)
+      (send _player-who-picked-up-power-up increase-shot-damage -1)
+      (send _player-who-picked-up-power-up increase-fire-ratio 2)
+      (send _player-who-picked-up-power-up change-speed 1))))
 
+(add-new-power-up-type power-up-weapon%)
+
+;Inverterar de andra spelarnas keys
+(define power-up-mez%
+  (class power-up%
+    (super-new)
+    (inherit-field _player-who-picked-up-power-up)
+    (inherit-field _image)
+    
+    (set! _image (read-bitmap "images/power-up-weapon.png"))
+    
+    (define/override (apply-power-up player)
+      (send player invert-movement-on-the-other-players))
+    
+    
+    (define/override (reset-power-up)
+      (send _player-who-picked-up-power-up un-invert-movement-on-the-other-players))))
+
+(add-new-power-up-type power-up-mez%)
 
 
 

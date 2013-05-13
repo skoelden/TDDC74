@@ -14,19 +14,23 @@
     (define _health 10) ;[int]
     (define _x-coord 0) ;[int]
     (define _y-coord 0) ;[int]
-    (define _speed 2) ;[int] pixlar/uppdatering
+    (define _speed 3) ;[int] pixlar/uppdatering
     (define _radius 30)
+    (define _inverted-movement #f)
     
     (define _tower-angle 0) ;[int] vinkel x-axel -> kanontorn medurs i radianer
-    (define _tower-length 10) ;[int]
+    (define _tower-length 15) ;[int]
     (define _tower-speed (* 1 (* (/ 1 180) pi)))
     
     (define _shot-speed 25)
     (define _shot-radius 2)
-    (define _shot-damage 10)
+    (define _shot-damage 1)
     
     (define _allowed-to-fire #t)
-    (define _freeze-time 3000)
+    (define _freeze-time 1000)
+    
+    (define _bitmap (read-bitmap "images/sombrero.png"
+                                 'unknown/alpha))
     
     
     
@@ -62,6 +66,8 @@
     ;Arg: value[int]
     ;-----------------------
     (define/public (move-x value)
+      (unless (not _inverted-movement)
+        (set value (* -1 value)))
       (if (= 0 value)
           (void)
           (if (send (send *game-board* get-map) moveable-at-position (+ _x-coord value) _y-coord this)
@@ -75,6 +81,8 @@
     ;Arg: value[int]
     ;-----------------------
     (define/public (move-y value)
+      (unless (not _inverted-movement)
+        (set value (* -1 value)))
       (if (= 0 value)
           (void)
           (if (send (send *game-board* get-map) moveable-at-position _x-coord (+ _y-coord value) this)
@@ -87,6 +95,8 @@
     ;Arg: value[int]
     ;-----------------------
     (define/public (change-tower-angle value)
+      (unless (not _inverted-movement)
+        (set value (* -1 value)))
       (set! _tower-angle (+ value _tower-angle)))
     
     ;-----------------------
@@ -95,6 +105,15 @@
     ;-----------------------
     (define/public (change-tower-length value)
       (set! _tower-length (+ value _tower-length)))
+    
+    (define/public (increase-shot-damage value)
+      (set! _shot-damage (+ value _shot-damage)))
+    
+    (define/public (increase-fire-ratio factor)
+      (set! _freeze-time (round (* _freeze-time factor))))
+    
+    (define/public (increase-tower-speed value)
+      (set! _tower-speed (+ _tower-speed value)))
     
     (define/public (move-to-x-coord value)
       (set! _x-coord value))
@@ -113,6 +132,27 @@
     
     (define/public (change-speed value)
       (set! _speed (+ _speed value)))
+    
+    (define/public (invert-movement)
+      (set! _inverted-movement #t))
+    
+    (define/public (un-invert-movement)
+      (set! _inverted-movement #f))
+    
+    (define/public (invert-movement-on-the-other-players)
+      (let ((commanded-player this))
+          (for-each (lambda (player) 
+                      (unless (eq? commanded-player this)
+                        (invert-movement)))
+                    (send *game-board* get-list-of-players))))
+    
+    (define/public (un-invert-movement-on-the-other-players)
+      (let ((commanded-player this))
+          (for-each (lambda (player) 
+                      (unless (eq? commanded-player this)
+                        (un-invert-movement)))
+                    (send *game-board* get-list-of-players))))
+    
     
     (define (random-spawn)
       (let ((random-x-coord (random (send *game-board* width)))
@@ -185,12 +225,16 @@
     (define/public (draw dc)
       (send dc translate _x-coord _y-coord)
       
+      #|
       (send dc draw-ellipse (- 0 _radius) (- 0 _radius) (* 2 _radius) (* 2 _radius))
       (send dc draw-line
             (* _radius (cos _tower-angle))
             (* _radius (sin _tower-angle))
             (* (+ _radius _tower-length) (cos _tower-angle))
-            (* (+ _radius _tower-length) (sin _tower-angle)))
+            (* (+ _radius _tower-length) (sin _tower-angle)))|#
+      (send dc rotate (- 0 _tower-angle))
+      (send dc draw-bitmap _bitmap (/ (- 0 (send _bitmap get-height)) 2) (/ (- 0 (send _bitmap get-width)) 2))
+      (send dc rotate _tower-angle)
       
       (let-values (((text-width text-height b s) (send dc get-text-extent (number->string _health))))
         (send dc draw-text (number->string _health) (- 0 (/ text-width 2)) (- 0 (/ text-height 2))))
