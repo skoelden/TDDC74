@@ -8,19 +8,21 @@
     (define _x-coord 0)
     (define _y-coord 0)
     
-    
+    ;;Fält som sparar en referens till spelaren som plockade upp power-upen
     (field (_player-who-picked-up-power-up #f)
            (_image #f))
     
     (define/public (get-radius)
       (/ _length 2))
     
+    ;;Ritar ut power-upen
     (define/public (draw dc)
       (send dc translate _x-coord _y-coord)
       (unless (not _image)
         (send dc draw-bitmap _image (- 0 (/ (send _image get-width) 2)) (- 0 (/ (send _image get-height) 2))))
       (send dc translate (- 0 _x-coord) (- 0 _y-coord)))
     
+    ;;Kollar om någon spelare har kört på spelaren, returnerar spelaren om så är fallet annars #f
     (define/public (hit-by-player?)
       (let ((player-hit #f))
         (for-each (lambda (player)

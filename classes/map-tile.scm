@@ -19,6 +19,7 @@
     (define/public (get-height)
       _height)
     
+    ;;Returnerar en lista med punkterade par med koordinater för hörnen för map-tilen
     (define/public (get-corners)
       (list (cons (- _x (/ _width 2))
                   (- _y (/ _height 2)))
@@ -29,6 +30,7 @@
             (cons (+ _x (/ _width 2))
                   (+ _y (/ _height 2)))))
     
+    ;Ritar ut map-tilen
     (define/public (draw dc)
       (let ((old-brush (send dc get-brush)))
         

@@ -7,6 +7,7 @@
     (init-field _map)
     (init-field _amount-of-allowed-power-ups)
     
+    ;;Listor över saker på spelplanen
     (define *list-of-shots* '())
     (define *list-of-power-ups* '())
     (define *list-of-players* '())
@@ -15,18 +16,23 @@
     (define/public (set!-map map)
       (set! *map* map))
     
+    ;Tick-funkrion som anropas av game-timern
     (define (tick!)
       (send *canvas* refresh))
     
-    (define *my-timer* (new timer% [notify-callback tick!]))
-    (send *my-timer* start 16)
-        
+    ;;Game-timer som kör tick var 16:e millisekund 
+    (define *game-timer* (new timer% [notify-callback tick!]))
+    (send *game-timer* start 16)
+    
+    ;;Returnerar spelplanens bredd
     (define/public (width)
       _width)
     
+    ;;Returnerar spelplanens höjd
     (define/public (height)
       _height)
     
+    ;;Returnerar spelplanens map
     (define/public (get-map)
       _map)
     

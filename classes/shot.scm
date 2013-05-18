@@ -1,4 +1,4 @@
-(define shot% ;skapar en subklass till object
+(define shot%
   (class object% 
     (super-new)
     
@@ -21,6 +21,7 @@
     (define/public (get-shot-damage)
       _shot-damage)
     
+    ;;Uppdaterar skottets position
     (define/public (update)
       (moveable?)
       (set! _x-coord (+ _x-coord _x-speed))
@@ -31,6 +32,7 @@
       (send dc draw-rectangle (- 0 _radius) (- 0 _radius) (* 2 _radius) (* 2 _radius))
       (send dc translate (- 0 _x-coord) (- 0 _y-coord))) ;Ritar ut skottet
     
+    ;;Kollar om skottet får röra sig till en viss position. Tar bort skottet ifall den inte får det
     (define (moveable?)
       (if (send (send *game-board* get-map) moveable-at-position _x-coord _y-coord this)
           (void)
@@ -39,5 +41,6 @@
     (define/public (delete)
       (send *game-board* delete-shot-from-list-of-shots this)) ;Tar bort skottet från listan över alla skott
     
+    ;;Lägger till skottet i listan över skott vid initiering
     (send *game-board* add-shot-to-list-of-shots this)))
     

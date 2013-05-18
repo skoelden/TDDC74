@@ -3,6 +3,8 @@
     (super-new)
     
     ;;Datafält
+    
+    ;;Styrknappar
     (init-field right-key)
     (init-field left-key)
     (init-field up-key)
@@ -11,31 +13,43 @@
     (init-field tower-ccw-key)
     (init-field shoot-key)
     
-    (define _health 10) ;[int]
-    (define _x-coord 0) ;[int]
-    (define _y-coord 0) ;[int]
-    (define _speed 3) ;[int] pixlar/uppdatering
-    (define _radius 30)
+    (define _health 10)
+    (define _x-coord 0)
+    (define _y-coord 0)
+    (define _speed 3) ;;pixlar/uppdatering
+    (define _radius 30) ;;Spelarens radie
     
-    (define _tower-angle 0) ;[int] vinkel x-axel -> kanontorn medurs i radianer
-    (define _tower-length 15) ;[int]
+    (define _tower-angle 0) ;vinkel x-axel -> kanontorn medurs i radianer
+    (define _tower-length 15)
     (define _tower-speed (* 1 (* (/ 1 180) pi)))
     
     (define _shot-speed 25)
     (define _shot-radius 2)
     (define _shot-damage 1)
     
+    ;;För att inte spelaren ska kunna skjuta hur snabbt som helst
     (define _allowed-to-fire #t)
     (define _freeze-time 1000)
     
+    ;;Spelarens bild
     (define _bitmap (read-bitmap "images/sombrero.png"
                                  'unknown/alpha))
     
+    ;;Fält för att hålla koll på hur många gånger en spelare drabbats av power-upen mez
     (define _amount-of-mez-taken 0)
     
     
-    
     ;;Datareturnerare
+    
+    (define/public (get-radius)
+      _radius)
+    
+    (define/public (get-x-coord)
+      _x-coord)
+    
+    (define/public (get-y-coord)
+      _y-coord)
+
     
     (define/public (invert-movement-on-other-players)
       (for-each (lambda (player)
@@ -76,8 +90,6 @@
     (define/public (get-health)
       _health)
     
-    ;;Metoder
-    
     ;-----------------------
     ;Beskr: minskar spelarens hälsa med value
     ;Arg: value[int]
@@ -104,9 +116,7 @@
           (if (send (send *game-board* get-map) moveable-at-position (+ _x-coord value) _y-coord this)
               (set! _x-coord (+ _x-coord value))
               (move-x (- value (/ value (abs value)))))))
-    
-    
-    
+        
     ;-----------------------
     ;Beskr: ändrar spelarens y-koordinat
     ;Arg: value[int]
@@ -117,7 +127,6 @@
           (if (send (send *game-board* get-map) moveable-at-position _x-coord (+ _y-coord value) this)
               (set! _y-coord (+ _y-coord value))
               (move-y (- value (/ value (abs value)))))))
-    
     
     ;-----------------------
     ;Beskr: ändrar kanontornets vinkel cw
@@ -150,21 +159,12 @@
     (define/public (move-to-y-coord value)
       (set! _y-coord value))
     
-    (define/public (get-radius)
-      _radius)
-    
-    (define/public (get-x-coord)
-      _x-coord)
-    
-    (define/public (get-y-coord)
-      _y-coord)
-    
     (define/public (increase-speed value)
       (if (>= _speed 0)
           (set! _speed (+ _speed value))
           (set! _speed (- _speed value))))
-
     
+    ;;Slumpar ut spelarens position
     (define (random-spawn)
       (let ((random-x-coord (random (send *game-board* width)))
             (random-y-coord (random (send *game-board* height))))
@@ -174,12 +174,13 @@
               (set! _y-coord random-y-coord))
             (random-spawn))))
     
-    
+    ;;Återställer allowed-to-fire, anropas från timer startad av metoden fire
     (define (reset-allowed-to-fire)
       (set! _allowed-to-fire #t))
     
-    
+    ;;Skjuter
     (define (fire)        
+      ;;Skapar ett nytt skott i kanontornets mynning med x- och y-hastighet enligt kanontornets riktning
       (new shot%
            (_radius _shot-radius)
            (_x-speed (* _shot-speed (cos _tower-angle)))
@@ -188,12 +189,16 @@
            (_y-coord (+ _y-coord (* (sin _tower-angle) (+ _radius _tower-length))))
            (_shot-damage _shot-damage))
       
+      ;;Så att spelaren inte kan skjuta
       (set! _allowed-to-fire #f)
+      
+      ;;Timer som återställer _allowed-to-fire efter freeze-time
       (new timer%
            (notify-callback reset-allowed-to-fire)
            (interval _freeze-time)
            (just-once? #t)))
     
+    ;;Kollar om något skott har träffat spelaren och vidtar lämplig åtgärd
     (define (get-hits)
       (for-each (lambda (shot)
                   (if (> (+ _radius (send shot get-radius)) (sqrt (+ (sqr (- _x-coord (send shot get-x-coord)))
@@ -204,10 +209,12 @@
                       (void)))
                 (send *game-board* get-list-of-shots)))
     
+    ;;Uppdateringsfunktion, flyttar spelaren enligt knapptryckningar och kollar träffar av skott
     (define/public (update)
       (move-by-keypress)
       (get-hits))
     
+    ;;Flyttar spelaren. Frågar keyboard-handlern om knappar är intryckta och flyttar därefter
     (define (move-by-keypress)
       (cond
         ((send *kh* pressed? right-key)
@@ -232,17 +239,10 @@
          (unless (not _allowed-to-fire)   
            (fire)))))
     
-    
+    ;;Ritar ut spelaren
     (define/public (draw dc)
       (send dc translate _x-coord _y-coord)
-      
-      #|
-      (send dc draw-ellipse (- 0 _radius) (- 0 _radius) (* 2 _radius) (* 2 _radius))
-      (send dc draw-line
-            (* _radius (cos _tower-angle))
-            (* _radius (sin _tower-angle))
-            (* (+ _radius _tower-length) (cos _tower-angle))
-            (* (+ _radius _tower-length) (sin _tower-angle)))|#
+     
       (send dc rotate (- 0 _tower-angle))
       (send dc draw-bitmap _bitmap (/ (- 0 (send _bitmap get-height)) 2) (/ (- 0 (send _bitmap get-width)) 2))
       (send dc rotate _tower-angle)
@@ -253,8 +253,9 @@
       
       (send dc translate (- 0 _x-coord) (- 0 _y-coord)))
     
-    (send *game-board* add-player-to-list-of-players this)
-    (random-spawn)))
+    (send *game-board* add-player-to-list-of-players this) ;;Lägger till spelaren i game-boardens lista över spelaren
+    (random-spawn) ;;Slumpar ut en plats att spawna på, som inte innehåller något hinder
+    ))
 
 
 

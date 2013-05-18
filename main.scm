@@ -1,3 +1,5 @@
+
+;;Importer
 (load "classes/player.scm")
 (load "graphics.scm")
 (load "classes/keyboard-handler.scm")
@@ -8,13 +10,13 @@
 (load "classes/map.scm")
 (load "classes/map-tile.scm")
 
-
+;;Spelplanen
 (define *game-board* (new game-board%
                           [_width 1000]
                           [_height 1000]
-                          [_map (new map%
+                          [_map (new map%  ;;Spelkartan
                                      [*list-of-tiles* (list
-                                                       (new map-tile%
+                                                       (new map-tile% ;;Spelkartans byggstenar
                                                             [_x 250]
                                                             [_y 275]
                                                             [_width 200]
@@ -50,6 +52,7 @@
                                                             [_width 50]
                                                             [_height 150]))])]
                           [_amount-of-allowed-power-ups 5]))
+
 (define *kh* (new keyboard-handler%))
 
 (new player%
@@ -79,9 +82,4 @@
      (tower-ccw-key #\o)
      (shoot-key #\p))
 
-;(define (tick!)
- ; (send *canvas* refresh))
-
-;(define *my-timer* (new timer% [notify-callback tick!]))
-;(send *my-timer* start 16)
 
