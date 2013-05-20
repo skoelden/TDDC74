@@ -27,20 +27,24 @@
       (set! _x-coord (+ _x-coord _x-speed))
       (set! _y-coord (+ _y-coord _y-speed))) ;Uppdaterar skottets koordinater
     
-     (define/public (draw dc)
-      (send dc translate _x-coord _y-coord)
-      (send dc draw-rectangle (- 0 _radius) (- 0 _radius) (* 2 _radius) (* 2 _radius))
-      (send dc translate (- 0 _x-coord) (- 0 _y-coord))) ;Ritar ut skottet
-    
-    ;;Kollar om skottet får röra sig till en viss position. Tar bort skottet ifall den inte får det
-    (define (moveable?)
-      (if (send (send *game-board* get-map) moveable-at-position _x-coord _y-coord this)
-          (void)
-          (delete)))
-    
-    (define/public (delete)
-      (send *game-board* delete-shot-from-list-of-shots this)) ;Tar bort skottet från listan över alla skott
-    
-    ;;Lägger till skottet i listan över skott vid initiering
-    (send *game-board* add-shot-to-list-of-shots this)))
-    
+    (define/public (draw dc)
+      (let ((old-brush (send dc get-brush)))
+        
+        (send dc translate _x-coord _y-coord)
+        (send dc set-brush (new brush% [style 'solid]))
+        (send dc draw-rectangle (- 0 _radius) (- 0 _radius) (* 2 _radius) (* 2 _radius))
+        (send dc set-brush old-brush)
+        (send dc translate (- 0 _x-coord) (- 0 _y-coord)))) ;Ritar ut skottet
+      
+      ;;Kollar om skottet får röra sig till en viss position. Tar bort skottet ifall den inte får det
+      (define (moveable?)
+        (if (send (send *game-board* get-map) moveable-at-position _x-coord _y-coord this)
+            (void)
+            (delete)))
+      
+      (define/public (delete)
+        (send *game-board* delete-shot-from-list-of-shots this)) ;Tar bort skottet från listan över alla skott
+      
+      ;;Lägger till skottet i listan över skott vid initiering
+      (send *game-board* add-shot-to-list-of-shots this)))
+  

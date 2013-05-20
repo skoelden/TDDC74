@@ -60,26 +60,26 @@
      (left-key #\a)
      (up-key #\w)
      (down-key #\s)
-     (tower-cw-key #\u)
+     (tower-cw-key #\y)
      (tower-ccw-key #\t)
-     (shoot-key #\y))
+     (shoot-key #\u))
 
 (new player%
      (right-key #\b)
      (left-key #\c)
-     (up-key #\g)
+     (up-key #\f)
      (down-key #\v)
-     (tower-cw-key 'numpad3)
+     (tower-cw-key 'numpad2)
      (tower-ccw-key 'numpad1)
-     (shoot-key 'numpad2))
+     (shoot-key 'numpad3))
 
-(new player%
+#|(new player%
      (right-key #\l)
      (left-key #\j)
      (up-key #\i)
      (down-key #\k)
-     (tower-cw-key #\å)
+     (tower-cw-key #\p)
      (tower-ccw-key #\o)
-     (shoot-key #\p))
+     (shoot-key #\å))
 
-
+|#
