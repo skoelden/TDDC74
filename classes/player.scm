@@ -153,11 +153,7 @@
           (set! _tower-speed (+ _tower-speed value))
           (set! _tower-speed (- _tower-speed value))))
     
-    (define/public (move-to-x-coord value)
-      (set! _x-coord value))
-    
-    (define/public (move-to-y-coord value)
-      (set! _y-coord value))
+   
     
     (define/public (increase-speed value)
       (if (>= _speed 0)
